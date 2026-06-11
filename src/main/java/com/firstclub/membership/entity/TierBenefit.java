@@ -6,6 +6,18 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
+/**
+ * A single perk attached to a MembershipTier.
+ *
+ * minOrderValue is the key enforcement field:
+ *   - null  → benefit applies to every order (Gold/Platinum FREE_DELIVERY)
+ *   - set   → benefit only applies when orderAmount >= minOrderValue (Silver FREE_DELIVERY requires ₹499)
+ *
+ * This condition is evaluated at runtime by BenefitApplicationService via BenefitEvaluationStrategy.
+ * It is stored as data so thresholds can be changed without a code deployment.
+ *
+ * value is numeric (e.g. 10.0 = 10% for EXTRA_DISCOUNT); 0.0 means not applicable for that type.
+ */
 @Entity
 @Table(name = "tier_benefits")
 @Getter

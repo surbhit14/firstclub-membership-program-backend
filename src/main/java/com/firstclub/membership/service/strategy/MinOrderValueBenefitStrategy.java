@@ -6,16 +6,22 @@ import com.firstclub.membership.enums.BenefitType;
 import java.math.BigDecimal;
 
 /**
- * Base strategy for benefits whose only condition is a minimum order value.
- * Subclass this for any BenefitType that needs additional checks on top.
+ * Abstract base for benefit strategies whose only condition is a minimum order value.
  *
- * Covers: FREE_DELIVERY, EXTRA_DISCOUNT, EXCLUSIVE_DEALS,
- *         EARLY_SALE_ACCESS, PRIORITY_SUPPORT, EXCLUSIVE_COUPONS, FASTER_DELIVERY.
+ * Logic: if minOrderValue is null → no minimum set → always applicable.
+ *        if minOrderValue is set  → applicable only when orderAmount >= minOrderValue.
+ *
+ * Example: Silver FREE_DELIVERY has minOrderValue=₹499. An order of ₹300 → isApplicable=false.
+ *          Gold FREE_DELIVERY has minOrderValue=null → always applicable.
+ *
+ * Concrete subclasses only implement getSupportedBenefitType() and inherit this check.
+ * To add benefit-specific logic, override isApplicable() and call super.isApplicable() first.
  */
 public abstract class MinOrderValueBenefitStrategy implements BenefitEvaluationStrategy {
 
     @Override
     public boolean isApplicable(TierBenefit benefit, BigDecimal orderAmount) {
+        // null minOrderValue means no threshold — benefit always applies
         return benefit.getMinOrderValue() == null
                 || orderAmount.compareTo(benefit.getMinOrderValue()) >= 0;
     }

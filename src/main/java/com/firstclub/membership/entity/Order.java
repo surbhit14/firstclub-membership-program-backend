@@ -7,6 +7,16 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Represents a purchase made by a user.
+ *
+ * appliedTier is a point-in-time snapshot of the user's membership tier at order creation.
+ * It is intentionally nullable — non-members can still place orders.
+ *
+ * Storing the tier on the order (rather than deriving it from the membership history) ensures
+ * the audit trail is stable: even if the user later upgrades, the order retains the tier that
+ * was actually active when it was placed.
+ */
 @Entity
 @Table(name = "orders",
         indexes = {

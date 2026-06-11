@@ -8,6 +8,16 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a privilege level (Silver / Gold / Platinum).
+ *
+ * A tier owns two child collections:
+ *   - benefits:  what members at this tier receive (free delivery, discounts, etc.)
+ *   - criteria:  what a user must do to qualify for this tier (order count, spend, cohort)
+ *
+ * criteriaLogic controls whether ANY or ALL criteria must be satisfied for qualification.
+ * Silver has no criteria rows — it is the open entry tier.
+ */
 @Entity
 @Table(name = "membership_tiers")
 @Getter

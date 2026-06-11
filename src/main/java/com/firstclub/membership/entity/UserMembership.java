@@ -9,6 +9,18 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * The join between a User, their MembershipPlan (pricing), and their MembershipTier (privilege level).
+ *
+ * Only one ACTIVE record is allowed per user at a time — enforced in UserMembershipService.subscribe().
+ *
+ * @Version enables optimistic locking: concurrent upgrade/downgrade requests will race on the
+ * version column — the loser gets ObjectOptimisticLockingFailureException → HTTP 409.
+ *
+ * status transitions:
+ *   ACTIVE → CANCELLED  (user cancels)
+ *   ACTIVE → EXPIRED    (scheduled job marks it when endDate passes)
+ */
 @Entity
 @Table(name = "user_memberships",
         indexes = {

@@ -20,6 +20,18 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Evaluates which benefits are applicable for a given user + order amount combination.
+ *
+ * Uses the Strategy Pattern (mirroring TierEvaluationService): each BenefitType has a
+ * @Component implementing BenefitEvaluationStrategy. Unregistered types fall back to
+ * DefaultBenefitStrategy so new BenefitType values work without any registration.
+ *
+ * Three entry points:
+ *   getBenefitsForOrder()          → all benefits with conditionMet flag (for UI display)
+ *   getApplicableBenefitsForOrder()→ only conditionMet=true (for checkout pipeline)
+ *   isBenefitApplicable()          → single benefit point-check (for downstream services)
+ */
 @Slf4j
 @Service
 public class BenefitApplicationService {
@@ -27,8 +39,8 @@ public class BenefitApplicationService {
     private final UserMembershipRepository membershipRepository;
     private final Map<BenefitType, BenefitEvaluationStrategy> strategyMap;
 
-    // Spring injects all BenefitEvaluationStrategy @Component beans.
-    // Mirrors the same pattern used by TierEvaluationService for CriteriaType strategies.
+    // Spring collects all BenefitEvaluationStrategy beans into a list.
+    // Indexed into a map by BenefitType for O(1) dispatch — same pattern as TierEvaluationService.
     public BenefitApplicationService(
             UserMembershipRepository membershipRepository,
             List<BenefitEvaluationStrategy> strategies) {

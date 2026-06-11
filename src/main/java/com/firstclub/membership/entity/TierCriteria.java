@@ -4,6 +4,17 @@ import com.firstclub.membership.enums.CriteriaType;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * A single qualification rule attached to a MembershipTier.
+ *
+ * Field usage by criteriaType:
+ *   ORDER_COUNT  → threshold = minimum total orders ever placed
+ *   ORDER_VALUE  → threshold = minimum spend (INR), evaluated within evaluationWindowDays
+ *   COHORT       → cohortName = the Cohort enum name the user must belong to
+ *
+ * How multiple criteria rows combine is controlled by the parent tier's criteriaLogic (ANY / ALL).
+ * Each row is evaluated by the matching TierEvaluationStrategy registered for its criteriaType.
+ */
 @Entity
 @Table(name = "tier_criteria")
 @Getter

@@ -23,6 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Core membership lifecycle service.
+ *
+ * Key behaviors:
+ *  - subscribe()              → always starts the user at Silver; rejects duplicate active memberships
+ *  - upgradeTier()            → validates criteria via TierEvaluationService; protected by optimistic lock
+ *  - downgradeTier()          → no criteria check; user can always go lower
+ *  - evaluateAndAutoUpgrade() → called after every order; promotes to the highest qualifying tier
+ *  - expireOldMemberships()   → scheduled daily at midnight; marks past-endDate memberships as EXPIRED
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
